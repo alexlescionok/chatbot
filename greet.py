@@ -9,11 +9,20 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+from pydantic import BaseModel
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+class Prompt(BaseModel):
+    prompt: str
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
+@app.get("/chats")
+def get_chats():
+    return {"chats": []}
+
+
+@app.get("/chats/{chat_id}")
+def get_chats(chat_id: int):
+    return {"chat_id": chat_id}
+
+@app.post("/chats/{chat_id}")
+def post_prompt(chat_id: int, item: Prompt):
+    return {"chat_id": chat_id, "prompt_short": f"{item.prompt[:10]}..."}

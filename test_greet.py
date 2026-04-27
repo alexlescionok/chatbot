@@ -1,5 +1,7 @@
 from greet import greet
 import pytest
+from fastapi.testclient import TestClient
+from greet import app
 
 '''
 Test greeting 
@@ -17,3 +19,23 @@ def test_greeting(input):
 def test_ask_info(input):
     result = greet(input)
     assert result == "I can answer questions like A, B, C. What can I help you with?"
+
+### Fast API tests
+client = TestClient(app)
+
+def test_get_chats():
+    response = client.get("/chats")
+    assert response.status_code == 200
+
+def test_get_specific_chats():
+    response = client.get("/chats/1")
+    assert response.status_code == 200
+    assert response.json() == {"chat_id": 1}
+
+def test_prompt_status_code():
+    response = client.post(
+        "/chats/1",
+        json={"prompt": "This is my test prompt"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"chat_id": 1, "prompt_short": "This is my..."}
