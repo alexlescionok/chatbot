@@ -32,10 +32,18 @@ def test_get_specific_chats():
     assert response.status_code == 200
     assert response.json() == {"chat_id": 1}
 
-def test_prompt_status_code():
+def test_prompt_known_introduction_words():
     response = client.post(
         "/chats/1",
-        json={"prompt": "This is my test prompt"},
+        json={"prompt": "Tell me what you do"},
     )
     assert response.status_code == 200
-    assert response.json() == {"chat_id": 1, "prompt_short": "This is my..."}
+    assert response.json() == {"chat_id": 1, "prompt_short": "Tell me wh...", "response": "I can answer questions like A, B, C. What can I help you with?"}
+
+def test_prompt_unknown_introduction_words():
+    response = client.post(
+        "/chats/1",
+        json={"prompt": "Tell me who you are"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"chat_id": 1, "prompt_short": "Tell me wh...", "response": "Hello, I am a chatbot that helps with X. I can answer questions like A, B, C."}
