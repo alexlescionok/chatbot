@@ -1,4 +1,3 @@
-from greet import greet
 import pytest
 from fastapi.testclient import TestClient
 from greet import app
