@@ -30,3 +30,12 @@ def test_create_conversation_unique_ids(db_conn):
     conversation_id_2 = db.create_conversation(db_conn)["id"]
 
     assert conversation_id_1 != conversation_id_2
+
+def test_get_conversation_id_by_session_id(db_conn):
+    conversation = db.create_conversation(db_conn)
+
+    conversation_id = conversation["id"]
+    session_id = conversation["session_id"]
+
+    retrieved_conversation_id = db.get_conversation_id(db_conn, session_id)
+    assert retrieved_conversation_id == conversation_id

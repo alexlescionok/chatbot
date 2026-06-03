@@ -17,3 +17,9 @@ def create_conversation(conn):
             "session_id": row[1],
             "created_at": row[2]
         }
+
+def get_conversation_id(conn, session_id):
+    with conn.cursor() as cur:
+        cur.execute("SELECT id FROM conversations WHERE session_id = %s", (session_id,))
+        row = cur.fetchone()
+        return row[0] if row else None
