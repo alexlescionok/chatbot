@@ -6,9 +6,11 @@ import pytest
 @pytest.fixture
 def db_conn():
     with db.get_conn() as conn:
-        with conn.transaction():
+        conn.autocommit = False
+        try:
             yield conn
-            raise psycopg.Rollback()
+        finally:
+            conn.rollback()
 
 def test_create_conversation_returns_id(db_conn):
     conversation = db.create_conversation(db_conn)
