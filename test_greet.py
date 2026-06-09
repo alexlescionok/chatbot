@@ -31,3 +31,5 @@ def test_prompt_unknown_introduction_words(input):
     )
     assert response.status_code == 200
     assert response.json() == {"chat_id": 1, "prompt_short": f"{input[:10]}...", "response": "Hello, I am a chatbot that helps with X. I can answer questions like A, B, C."}
+
+# test add_message fails if conversation_id does not exist in DB

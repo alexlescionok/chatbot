@@ -12,7 +12,7 @@ def db_conn():
         finally:
             conn.rollback()
 
-def test_create_conversation_returns_id(db_conn):
+def test_create_conversation_returns_content(db_conn):
     conversation = db.create_conversation(db_conn)
     assert conversation is not None
     assert isinstance(conversation, dict)
@@ -41,3 +41,13 @@ def test_get_conversation_id_by_session_id(db_conn):
 
     retrieved_conversation_id = db.get_conversation_id(db_conn, session_id)
     assert retrieved_conversation_id == conversation_id
+
+def test_write_message_returns_content(db_conn):
+    conversation = db.create_conversation(db_conn)
+    conversation_id = conversation["id"]
+
+    message = db.write_message(db_conn, conversation_id, "user", "hello")
+
+    assert message is not None
+    assert isinstance(message, dict)
+    assert message["content"] == "hello"

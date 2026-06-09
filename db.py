@@ -23,3 +23,12 @@ def get_conversation_id(conn, session_id):
         cur.execute("SELECT id FROM conversations WHERE session_id = %s", (session_id,))
         row = cur.fetchone()
         return row[0] if row else None
+
+def write_message(conn, conversation_id, role, content):
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s) RETURNING id, content", (conversation_id, role, content))
+        row = cur.fetchone()
+        return {
+            "id": row[0],
+            "content": row[1]
+        }
