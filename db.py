@@ -22,7 +22,9 @@ def get_conversation_id(conn, session_id):
     with conn.cursor() as cur:
         cur.execute("SELECT id FROM conversations WHERE session_id = %s", (session_id,))
         row = cur.fetchone()
-        return row[0] if row else None
+        if row is None:
+            raise ValueError(f"Conversation not found for session_id: {session_id}")
+        return row[0]
 
 def write_message(conn, conversation_id, role, content):
     with conn.cursor() as cur:

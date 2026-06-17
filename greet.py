@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+import db
 
 app = FastAPI()
 
@@ -14,13 +15,31 @@ def greet(query: str) -> str:
 class Prompt(BaseModel):
     prompt: str
 
-@app.get("/chats")
-def get_chats():
-    return {"chats": []}
+# TODO: bring back once logic for handling 1 chat is done
+# @app.get("/chats")
+# def get_chats():
+#     return {"chats": []}
 
 @app.get("/chats/{chat_id}")
 def get_chats(chat_id: int):
     return {"chat_id": chat_id}
+
+@app.post("/chats")
+def post_chat():
+    with db.get_conn() as conn:
+        conversation = db.create_conversation(conn)
+    return {"session_id": conversation["session_id"]}
+
+@app.post("/chats/{session_id}/messages")
+def post_chat(session_id: str, prompt: Prompt):
+    with db.get_conn() as conn:
+        try:
+            conversation_id = db.get_conversation_id(conn, session_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        message = db.write_message(conn, conversation_id, "user", prompt.prompt)
+        return message
 
 @app.post("/chats/{chat_id}")
 def post_prompt(chat_id: int, prompt: Prompt):
