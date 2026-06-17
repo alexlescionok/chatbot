@@ -20,9 +20,10 @@ class Prompt(BaseModel):
 # def get_chats():
 #     return {"chats": []}
 
-@app.get("/chats/{chat_id}")
-def get_chats(chat_id: int):
-    return {"chat_id": chat_id}
+# TODO: re-write this to use session_id instead of chat_id§
+# @app.get("/chats/{chat_id}")
+# def get_chats(chat_id: int):
+#     return {"chat_id": chat_id}
 
 @app.post("/chats")
 def post_chat():
