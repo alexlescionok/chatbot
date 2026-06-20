@@ -1,5 +1,4 @@
 import pytest
-import uuid
 from fastapi.testclient import TestClient
 from greet import app
 
@@ -48,10 +47,27 @@ def test_post_message_to_conversation(input):
     )
     assert response.status_code == 200
 
-def test_post_message_to_nonexistent_conversation_returns_404():
-    fake_uuid = str(uuid.uuid4())
+def test_post_message_to_nonexistent_conversation_returns_404(fake_uuid):
     response = client.post(
         f"/chats/{fake_uuid}/messages",
         json={"session_id": fake_uuid, "prompt": "What do you do?"},
     )
     assert response.status_code == 404
+
+# @pytest.mark.parametrize("input", ["What do you do?", "What's your purpose?", "Tell me about yourself", "WhAT"])
+def test_get_message_in_conversation():
+    response = client.post(
+        "/chats"
+    )
+    session_id = response.json()["session_id"]
+
+    response = client.post(
+        f"/chats/{session_id}/messages",
+        json={"session_id": session_id, "prompt": "What do you do?"},#input},
+    )
+
+    response = client.get(
+        f"/chats/{session_id}/messages"
+    )
+    assert response.status_code == 200
+

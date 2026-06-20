@@ -20,10 +20,16 @@ class Prompt(BaseModel):
 # def get_chats():
 #     return {"chats": []}
 
-# TODO: re-write this to use session_id instead of chat_id§
-# @app.get("/chats/{chat_id}")
-# def get_chats(chat_id: int):
-#     return {"chat_id": chat_id}
+@app.get("/chats/{session_id}/messages")
+def get_chat_messages(session_id: str):
+    with db.get_conn() as conn:
+        try:
+            conversation_id = db.get_conversation_id(conn, session_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        messages = db.get_messages(conn, conversation_id)
+        return messages
 
 @app.post("/chats")
 def post_chat():

@@ -1,8 +1,6 @@
 
-import psycopg
 import db
 import pytest
-import uuid
 
 @pytest.fixture
 def db_conn():
@@ -51,9 +49,24 @@ def test_write_message_returns_content(db_conn):
 
     assert message is not None
     assert isinstance(message, dict)
+    assert message["role"] == "user"
     assert message["content"] == "hello"
 
-def test_get_conversation_id_raises_exception_for_nonexistent_session_id(db_conn):
-    fake_uuid = str(uuid.uuid4())
+def test_get_conversation_id_raises_exception_for_nonexistent_session_id(db_conn, fake_uuid):
     with pytest.raises(ValueError):
         db.get_conversation_id(db_conn, fake_uuid)
+
+def test_get_messages_returns_content(db_conn):
+    prompts = ["hello", "hi", "howdy"]
+
+    conversation = db.create_conversation(db_conn)
+    conversation_id = conversation["id"]
+
+    for content in prompts:
+        db.write_message(db_conn, conversation_id, "user", content)
+
+    messages = db.get_messages(db_conn, conversation_id)
+
+    assert messages is not None
+    for i, content in enumerate(prompts):
+        assert messages[i]["content"] == content

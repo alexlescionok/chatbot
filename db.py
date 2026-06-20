@@ -28,9 +28,16 @@ def get_conversation_id(conn, session_id):
 
 def write_message(conn, conversation_id, role, content):
     with conn.cursor() as cur:
-        cur.execute("INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s) RETURNING id, content", (conversation_id, role, content))
+        cur.execute("INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s) RETURNING id, role, content", (conversation_id, role, content))
         row = cur.fetchone()
         return {
             "id": row[0],
-            "content": row[1]
+            "role": row[1],
+            "content": row[2]
         }
+
+def get_messages(conn, conversation_id):
+    with conn.cursor() as cur:
+        cur.execute("SELECT id, role, content FROM messages WHERE conversation_id = %s ORDER BY created_at", (conversation_id,))
+        rows = cur.fetchall()
+        return [{ "id": row[0], "role": row[1], "content": row[2]} for row in rows]
