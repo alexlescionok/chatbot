@@ -10,13 +10,6 @@ client = TestClient(app)
 #     response = client.get("/chats")
 #     assert response.status_code == 200
 
-# TODO: re-write this to use session_id instead of chat_id§
-# def test_get_specific_chats():
-#     response = client.get("/chats/1")
-#     assert response.status_code == 200
-#     assert response.json() == {"chat_id": 1}
-
-
 @pytest.mark.parametrize("input", ["hello", "hi", "howdy", "Tell me who you are"])
 def test_prompt_unknown_introduction_words(input):
     response = client.post(
@@ -54,7 +47,6 @@ def test_post_message_to_nonexistent_conversation_returns_404(fake_uuid):
     )
     assert response.status_code == 404
 
-# @pytest.mark.parametrize("input", ["What do you do?", "What's your purpose?", "Tell me about yourself", "WhAT"])
 def test_get_message_in_conversation():
     response = client.post(
         "/chats"
