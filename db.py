@@ -1,6 +1,5 @@
 import psycopg
 import os
-import dotenv
 from dotenv import load_dotenv
 
 load_dotenv() 

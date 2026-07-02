@@ -1,16 +1,10 @@
 from fastapi import FastAPI, HTTPException
 import db
+import agent
 
 app = FastAPI()
 
 from pydantic import BaseModel
-
-def greet(query: str) -> str:
-    introduction_words = ["what", "purpose", "yourself", "do you do", "help me"]
-    for word in introduction_words:
-        if word in query.lower():
-            return "I can answer questions like A, B, C. What can I help you with?"
-    return "Hello, I am a chatbot that helps with X. I can answer questions like A, B, C."
 
 class Prompt(BaseModel):
     prompt: str
@@ -45,9 +39,11 @@ def post_chat(session_id: str, prompt: Prompt):
         except ValueError:
             raise HTTPException(status_code=404, detail="Conversation not found")
         
-        message = db.write_message(conn, conversation_id, "user", prompt.prompt)
-        return message
+        db.write_message(conn, conversation_id, "user", prompt.prompt)
+        
+        messages = db.get_messages(conn, conversation_id)
+        
+        agent_response = agent.prompt_agent(prompt.prompt, messages)
+        db.write_message(conn, conversation_id, "assistant", agent_response.output)
 
-@app.post("/chats/{chat_id}")
-def post_prompt(chat_id: int, prompt: Prompt):
-    return {"chat_id": chat_id, "prompt_short": f"{prompt.prompt[:10]}...", "response": greet(prompt.prompt)}
+        return agent_response.output
