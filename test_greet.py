@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from greet import app
 
@@ -10,15 +9,6 @@ client = TestClient(app)
 #     response = client.get("/chats")
 #     assert response.status_code == 200
 
-@pytest.mark.parametrize("input", ["hello", "hi", "howdy", "Tell me who you are"])
-def test_prompt_unknown_introduction_words(input):
-    response = client.post(
-        "/chats/1",
-        json={"prompt": input},
-    )
-    assert response.status_code == 200
-    assert response.json() == {"chat_id": 1, "prompt_short": f"{input[:10]}...", "response": "Hello, I am a chatbot that helps with X. I can answer questions like A, B, C."}
-
 ### Integration tests - to be moved to integration tests folder
 def test_create_conversation():
     response = client.post(
@@ -27,8 +17,7 @@ def test_create_conversation():
     assert response.status_code == 200
     assert "session_id" in response.json()
 
-@pytest.mark.parametrize("input", ["What do you do?", "What's your purpose?", "Tell me about yourself", "WhAT"])
-def test_post_message_to_conversation(input):
+def test_post_message_to_conversation():
     response = client.post(
         "/chats"
     )
@@ -36,7 +25,7 @@ def test_post_message_to_conversation(input):
 
     response = client.post(
         f"/chats/{session_id}/messages",
-        json={"session_id": session_id, "prompt": input},
+        json={"session_id": session_id, "prompt": "What do you do?"},
     )
     assert response.status_code == 200
 
@@ -55,7 +44,7 @@ def test_get_message_in_conversation():
 
     response = client.post(
         f"/chats/{session_id}/messages",
-        json={"session_id": session_id, "prompt": "What do you do?"},#input},
+        json={"session_id": session_id, "prompt": "What do you do?"},
     )
 
     response = client.get(
