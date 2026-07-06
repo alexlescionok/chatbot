@@ -12,8 +12,6 @@ class OllamaResponder():
             instructions='Be concise, reply with one sentence.', 
         )
 
-responder = OllamaResponder()
-
 def format_prompt(prompt: str, messages: list[dict] = []) -> str:
     if messages:
         history = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
@@ -23,17 +21,6 @@ def format_prompt(prompt: str, messages: list[dict] = []) -> str:
     prompt_with_history = f"{history}\nuser: {prompt}"
     return prompt_with_history
 
-def prompt_agent(prompt_with_history: str) -> str:
+def prompt_agent(responder: Agent, prompt_with_history: str) -> str:
     result = responder.agent.run_sync(prompt_with_history)
     return result
-
-### synchronous function call
-# result = prompt_agent("What is the capital of France?", messages=[])
-# print(result)
-
-# agent_hexagonal = OllamaResponder()
-# print(agent_hexagonal.fake_func())
-
-# print(agent_hexagonal.agent)
-
-# print(agent)

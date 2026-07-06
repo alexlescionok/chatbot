@@ -1,8 +1,7 @@
-from fastapi import FastAPI, HTTPException
-import db
+from fastapi import HTTPException
+from app import app, responder
 import agent
-
-app = FastAPI()
+import db
 
 from pydantic import BaseModel
 
@@ -45,7 +44,7 @@ def post_chat(session_id: str, prompt: Prompt):
 
         prompt_with_history = agent.format_prompt(prompt.prompt, messages)
         
-        agent_response = agent.prompt_agent(prompt_with_history)
+        agent_response = agent.prompt_agent(responder, prompt_with_history)
         db.write_message(conn, conversation_id, "assistant", agent_response.output)
 
         return agent_response.output

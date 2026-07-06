@@ -6,10 +6,7 @@ def test_formatted_prompt_includes_history():
    result = agent.format_prompt(prompt, messages)
    assert result == f"user: My name is Alex.\nassistant: Hello Alex! How can I assist you today?\nuser: {prompt}"
 
-# TODO: add test for standalone respond function ???
-
-
-def test_llm_gives_response():
+def test_agent_gives_response(responder):
     prompt = f"user: My name is Alex.\nassistant: Hello Alex! How can I assist you today?\nuser: What can you help me with?"
-    result = agent.prompt_agent(prompt)
+    result = agent.prompt_agent(responder, prompt)
     assert result.output is not None
