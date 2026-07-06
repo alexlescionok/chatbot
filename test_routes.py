@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
-from greet import app
+from app import app
+import routes
 
 ### Fast API tests
 client = TestClient(app)

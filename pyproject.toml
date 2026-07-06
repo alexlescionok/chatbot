@@ -12,7 +12,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
 ]
 [tool.fastapi]
-entrypoint = "greet:app"
+entrypoint = "main:app"
 dependencies = [
     "fastapi[standard]>=0.135.3",
 ]
