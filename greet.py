@@ -42,8 +42,10 @@ def post_chat(session_id: str, prompt: Prompt):
         db.write_message(conn, conversation_id, "user", prompt.prompt)
         
         messages = db.get_messages(conn, conversation_id)
+
+        prompt_with_history = agent.format_prompt(prompt.prompt, messages)
         
-        agent_response = agent.prompt_agent(prompt.prompt, messages)
+        agent_response = agent.prompt_agent(prompt_with_history)
         db.write_message(conn, conversation_id, "assistant", agent_response.output)
 
         return agent_response.output
