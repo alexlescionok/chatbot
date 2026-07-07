@@ -1,0 +1,25 @@
+name: chatbot_test
+
+services:
+  db:
+    image: postgres:16
+    networks:
+      - chatbot_test_network
+    restart: unless-stopped
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: chatbot_test
+      POSTGRES_USER: chatbot_test_user
+      POSTGRES_PASSWORD: testpassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d  # auto-runs on first start
+
+volumes:
+  postgres_test_data:
+networks:
+  chatbot_test_network:
+    name: chatbot_test_network

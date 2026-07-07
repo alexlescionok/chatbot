@@ -2,7 +2,7 @@
 import db
 import pytest
 
-@pytest.fixture
+@pytest.fixture()
 def db_conn():
     with db.get_conn() as conn:
         conn.autocommit = False
