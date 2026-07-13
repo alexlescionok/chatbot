@@ -11,80 +11,80 @@ def db_conn():
         finally:
             conn.rollback()
 
-def test_create_conversation_returns_content(db_conn):
-    conversation = db.create_conversation(db_conn)
-    assert conversation is not None
-    assert isinstance(conversation, dict)
+def test_create_chat_returns_content(db_conn):
+    chat = db.create_chat(db_conn)
+    assert chat is not None
+    assert isinstance(chat, dict)
 
-def test_create_conversation_exists_in_db(db_conn):
-    conversation_id = db.create_conversation(db_conn)["id"]
+def test_create_chat_exists_in_db(db_conn):
+    chat_id = db.create_chat(db_conn)["id"]
     
     with db_conn.cursor() as cur:
-        cur.execute("SELECT id FROM conversations WHERE id = %s", (conversation_id,))
+        cur.execute("SELECT id FROM chats WHERE id = %s", (chat_id,))
         row = cur.fetchone()
     
     assert row is not None
-    assert row[0] == conversation_id
+    assert row[0] == chat_id
 
-def test_create_conversation_unique_ids(db_conn):
-    conversation_id_1 = db.create_conversation(db_conn)["id"]
-    conversation_id_2 = db.create_conversation(db_conn)["id"]
+def test_create_chat_unique_ids(db_conn):
+    chat_id_1 = db.create_chat(db_conn)["id"]
+    chat_id_2 = db.create_chat(db_conn)["id"]
 
-    assert conversation_id_1 != conversation_id_2
+    assert chat_id_1 != chat_id_2
 
-def test_get_conversation_id_by_session_id(db_conn):
-    conversation = db.create_conversation(db_conn)
+def test_get_chat_id_by_session_id(db_conn):
+    chat = db.create_chat(db_conn)
 
-    conversation_id = conversation["id"]
-    session_id = conversation["session_id"]
+    chat_id = chat["id"]
+    session_id = chat["session_id"]
 
-    retrieved_conversation_id = db.get_conversation_id(db_conn, session_id)
-    assert retrieved_conversation_id == conversation_id
+    retrieved_chat_id = db.get_chat_id(db_conn, session_id)
+    assert retrieved_chat_id == chat_id
 
 def test_write_message_returns_content(db_conn):
-    conversation = db.create_conversation(db_conn)
-    conversation_id = conversation["id"]
+    chat = db.create_chat(db_conn)
+    chat_id = chat["id"]
 
-    message = db.write_message(db_conn, conversation_id, "user", "hello")
+    message = db.write_message(db_conn, chat_id, "user", "hello")
 
     assert message is not None
     assert isinstance(message, dict)
     assert message["role"] == "user"
     assert message["content"] == "hello"
 
-def test_get_conversation_id_raises_exception_for_nonexistent_session_id(db_conn, fake_uuid):
+def test_get_chat_id_raises_exception_for_nonexistent_session_id(db_conn, fake_uuid):
     with pytest.raises(ValueError):
-        db.get_conversation_id(db_conn, fake_uuid)
+        db.get_chat_id(db_conn, fake_uuid)
 
 def test_get_messages_returns_content(db_conn):
     prompts = ["hello", "hi", "howdy"]
 
-    conversation = db.create_conversation(db_conn)
-    conversation_id = conversation["id"]
+    chat = db.create_chat(db_conn)
+    chat_id = chat["id"]
 
     for content in prompts:
-        db.write_message(db_conn, conversation_id, "user", content)
+        db.write_message(db_conn, chat_id, "user", content)
 
-    messages = db.get_messages(db_conn, conversation_id)
+    messages = db.get_messages(db_conn, chat_id)
 
     assert messages is not None
     for i, content in enumerate(prompts):
         assert messages[i]["content"] == content
 
 
-def test_get_conversations_returns_no_conversations(db_conn):
+def test_get_chats_returns_no_chats(db_conn):
     
-    conversations = db.get_conversations(db_conn)
-    assert len(conversations) == 0
+    chats = db.get_chats(db_conn)
+    assert len(chats) == 0
     
-def test_get_conversations_returns_all_conversations_that_exist(db_conn):
+def test_get_chats_returns_all_chats_that_exist(db_conn):
     
     for i in range(2):
-        db.create_conversation(db_conn)
+        db.create_chat(db_conn)
     
-    conversations = db.get_conversations(db_conn)
-    assert len(conversations) == 2
+    chats = db.get_chats(db_conn)
+    assert len(chats) == 2
 
     for i in range(2):
-        assert "id" in conversations[i]
-        assert isinstance(conversations[i]["id"], int)
+        assert "id" in chats[i]
+        assert isinstance(chats[i]["id"], int)
