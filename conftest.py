@@ -21,7 +21,7 @@ def get_test_conn(load_env): # Pass load_env explicitly to ensure it runs before
 def clean_db_session(get_test_conn): # Pass get_test_conn explicitly to ensure it runs before this fixture
     with db.get_conn() as conn:
         with conn.cursor() as cur:
-            cur.execute("TRUNCATE TABLE messages, conversations RESTART IDENTITY CASCADE;")
+            cur.execute("TRUNCATE TABLE messages, chats RESTART IDENTITY CASCADE;")
         conn.commit()
     
 

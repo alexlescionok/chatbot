@@ -7,9 +7,9 @@ load_dotenv()
 def get_conn():
     return psycopg.connect(conninfo=os.environ["DATABASE_URI"])
 
-def create_conversation(conn: psycopg.Connection):
+def create_chat(conn: psycopg.Connection):
     with conn.cursor() as cur:
-        cur.execute("INSERT INTO conversations DEFAULT VALUES RETURNING id, session_id, created_at;")
+        cur.execute("INSERT INTO chats DEFAULT VALUES RETURNING id, session_id, created_at;")
         row = cur.fetchone()
         return {
             "id": row[0],
@@ -17,17 +17,17 @@ def create_conversation(conn: psycopg.Connection):
             "created_at": row[2]
         }
 
-def get_conversation_id(conn: psycopg.Connection, session_id: str):
+def get_chat_id(conn: psycopg.Connection, session_id: str):
     with conn.cursor() as cur:
-        cur.execute("SELECT id FROM conversations WHERE session_id = %s", (session_id,))
+        cur.execute("SELECT id FROM chats WHERE session_id = %s", (session_id,))
         row = cur.fetchone()
         if row is None:
-            raise ValueError(f"Conversation not found for session_id: {session_id}")
+            raise ValueError(f"Chat not found for session_id: {session_id}")
         return row[0]
 
-def write_message(conn: psycopg.Connection, conversation_id: str, role: str, content: str):
+def write_message(conn: psycopg.Connection, chat_id: str, role: str, content: str):
     with conn.cursor() as cur:
-        cur.execute("INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s) RETURNING id, role, content", (conversation_id, role, content))
+        cur.execute("INSERT INTO messages (chat_id, role, content) VALUES (%s, %s, %s) RETURNING id, role, content", (chat_id, role, content))
         row = cur.fetchone()
         return {
             "id": row[0],
@@ -35,14 +35,14 @@ def write_message(conn: psycopg.Connection, conversation_id: str, role: str, con
             "content": row[2]
         }
 
-def get_messages(conn: psycopg.Connection, conversation_id: str):
+def get_messages(conn: psycopg.Connection, chat_id: str):
     with conn.cursor() as cur:
-        cur.execute("SELECT id, role, content FROM messages WHERE conversation_id = %s ORDER BY created_at", (conversation_id,))
+        cur.execute("SELECT id, role, content FROM messages WHERE chat_id = %s ORDER BY created_at", (chat_id,))
         rows = cur.fetchall()
         return [{ "id": row[0], "role": row[1], "content": row[2]} for row in rows]
 
-def get_conversations(conn: psycopg.Connection):
+def get_chats(conn: psycopg.Connection):
     with conn.cursor() as cur:
-        cur.execute("SELECT * FROM conversations;")
+        cur.execute("SELECT * FROM chats;")
         rows = cur.fetchall()
         return [{ "id": row[0]} for row in rows]
