@@ -40,3 +40,9 @@ def get_messages(conn: psycopg.Connection, conversation_id: str):
         cur.execute("SELECT id, role, content FROM messages WHERE conversation_id = %s ORDER BY created_at", (conversation_id,))
         rows = cur.fetchall()
         return [{ "id": row[0], "role": row[1], "content": row[2]} for row in rows]
+
+def get_conversations(conn: psycopg.Connection):
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM conversations;")
+        rows = cur.fetchall()
+        return [{ "id": row[0]} for row in rows]

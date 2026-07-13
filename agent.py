@@ -23,4 +23,5 @@ def format_prompt(prompt: str, messages: list[dict] = []) -> str:
 
 def prompt_agent(responder: Agent, prompt_with_history: str) -> str:
     result = responder.agent.run_sync(prompt_with_history)
-    return result
+    return {"response": result.output}
+    

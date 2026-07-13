@@ -70,3 +70,21 @@ def test_get_messages_returns_content(db_conn):
     assert messages is not None
     for i, content in enumerate(prompts):
         assert messages[i]["content"] == content
+
+
+def test_get_conversations_returns_no_conversations(db_conn):
+    
+    conversations = db.get_conversations(db_conn)
+    assert len(conversations) == 0
+    
+def test_get_conversations_returns_all_conversations_that_exist(db_conn):
+    
+    for i in range(2):
+        db.create_conversation(db_conn)
+    
+    conversations = db.get_conversations(db_conn)
+    assert len(conversations) == 2
+
+    for i in range(2):
+        assert "id" in conversations[i]
+        assert isinstance(conversations[i]["id"], int)
