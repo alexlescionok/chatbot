@@ -71,6 +71,12 @@ def test_get_messages_returns_content(db_conn):
     for i, content in enumerate(prompts):
         assert messages[i]["content"] == content
 
+
+def test_get_conversations_returns_no_conversations(db_conn):
+    
+    conversations = db.get_conversations(db_conn)
+    assert len(conversations) == 0
+    
 def test_get_conversations_returns_all_conversations_that_exist(db_conn):
     
     for i in range(2):
@@ -81,8 +87,4 @@ def test_get_conversations_returns_all_conversations_that_exist(db_conn):
 
     for i in range(2):
         assert "id" in conversations[i]
-
-def test_get_conversations_returns_no_conversations(db_conn):
-    
-    conversations = db.get_conversations(db_conn)
-    assert len(conversations) == 0
+        assert isinstance(conversations[i]["id"], int)
