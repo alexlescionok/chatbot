@@ -17,7 +17,7 @@ def post_chat():
 @app.get("/chats")
 def get_chats():
     with db.get_conn() as conn:
-        return db.get_conversations(conn)
+        return {"chats": db.get_conversations(conn)}
 
 @app.get("/chats/{session_id}/messages")
 def get_chat_messages(session_id: str):
@@ -28,7 +28,7 @@ def get_chat_messages(session_id: str):
             raise HTTPException(status_code=404, detail="Conversation not found")
         
         messages = db.get_messages(conn, conversation_id)
-        return messages
+        return {"messages": messages}
 
 @app.post("/chats/{session_id}/messages")
 def post_chat(session_id: str, prompt: Prompt):
@@ -45,6 +45,6 @@ def post_chat(session_id: str, prompt: Prompt):
         prompt_with_history = agent.format_prompt(prompt.prompt, messages)
         
         agent_response = agent.prompt_agent(responder, prompt_with_history)
-        db.write_message(conn, conversation_id, "assistant", agent_response["response"])
+        db.write_message(conn, conversation_id, "assistant", agent_response)
 
-        return agent_response
+        return {"response": agent_response}

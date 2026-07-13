@@ -9,4 +9,4 @@ def test_formatted_prompt_includes_history():
 def test_agent_gives_response(responder):
     prompt = f"user: My name is Alex.\nassistant: Hello Alex! How can I assist you today?\nuser: What can you help me with?"
     result = agent.prompt_agent(responder, prompt)
-    assert result["response"] is not None
+    assert result is not None

@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_get_chats_returns_empty_list_when_no_chats_exist():
     response = client.get("/chats")
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
+    assert isinstance(response.json(), dict)
 
 def test_get_chats_returns_list_of_existing_chats():
     # 1st conversation
@@ -37,9 +37,9 @@ def test_get_chats_returns_list_of_existing_chats():
     
     response = client.get("/chats")
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
+    assert isinstance(response.json(), dict)
 
-    for conversation in response.json():
+    for conversation in response.json()["chats"]:
         assert "id" in conversation
 
 def test_create_conversation():
@@ -88,8 +88,8 @@ def test_get_message_in_conversation():
         f"/chats/{session_id}/messages"
     )
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
-    for message in response.json():
+    assert isinstance(response.json(), dict)
+    for message in response.json()["messages"]:
         assert "id" in message
         assert "role" in message
         assert "content" in message
