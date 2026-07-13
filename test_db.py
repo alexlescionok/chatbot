@@ -77,8 +77,12 @@ def test_get_conversations_returns_all_conversations_that_exist(db_conn):
         db.create_conversation(db_conn)
     
     conversations = db.get_conversations(db_conn)
-    print(conversations)
     assert len(conversations) == 2
 
     for i in range(2):
         assert "id" in conversations[i]
+
+def test_get_conversations_returns_no_conversations(db_conn):
+    
+    conversations = db.get_conversations(db_conn)
+    assert len(conversations) == 0
